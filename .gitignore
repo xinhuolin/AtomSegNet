@@ -1,0 +1,27 @@
+*.pyc
+__pycache__/
+
+.DS_Store
+Thumbs.db
+
+# eclipse ignore
+.settings/
+.project
+.classpath
+
+# idea ignore
+*.ipr
+*.iml
+*.iws
+.idea/
+
+# temp ignore
+*.log
+*.cache
+*.diff
+*.patch
+*.tmp
+
+# system ignore
+.DS_Store
+Thumbs.db
