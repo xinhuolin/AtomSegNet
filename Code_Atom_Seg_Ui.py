@@ -93,7 +93,7 @@ class Code_MainWindow(Ui_MainWindow):
                 ser_array = (map01(ser_array) * 255).astype('uint8')
                 self.ori_image = Image.fromarray(ser_array, 'L')
             elif suffix == '.dm3':
-                from file_readers.dm3_lib import dm3_lib as dm3
+                from file_readers import dm3_lib as dm3
                 data = dm3.DM3(self.imagePath_content).imagedata
                 self.imarray_original = np.array(data)
                 data = np.array(data, dtype='float64')
