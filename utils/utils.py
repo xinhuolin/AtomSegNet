@@ -39,11 +39,10 @@ def GetIndexRangeOfBlk(height, width, blk_row, blk_col, blk_r, blk_c, over_lap =
 """gaussianMask+ : /home/student/Documents/Atom Segmentation APP/AtomSegGUI/atom_seg_gaussian_mask/"""
 
 
-def load_model(model_path, model_num, data, cuda):
+def load_model(model_path, data, cuda):
 
 	from model_structure.unet_sigmoid import UNet
-#	model_name = 'model' + str(model_num)
-#	module = importlib.import_module(model_name, package = None)
+
 	use_padding = False
 	unet = UNet()
 	unet = unet.eval()
