@@ -48,7 +48,20 @@ class UNet(nn.Module):
         self.bn9 = nn.BatchNorm2d(colordim)
         self.maxpool = nn.MaxPool2d(2, stride=2, return_indices=False, ceil_mode=False)
         self.upsample = nn.UpsamplingBilinear2d(scale_factor=2)
-        self._initialize_weights()
+        #self._initialize_weights()
+
+        # self.input_layer = nn.Sequential(self.conv1_1, self.bn1_1, nn.ReLU(),self.conv1_2, self.bn1_2,  nn.ReLU())
+        #
+        # self.down1 = nn.Sequential(self.conv2_1, self.bn2_1, nn.ReLU(), self.conv2_2, self.bn2_2, nn.ReLU())
+        #
+        # self.down2 = nn.Sequential(self.conv4_1, self.bn4_1, nn.ReLU(), self.conv4_2, self.bn4_2, nn.ReLU())
+        #
+        # self.up1 = nn.Sequential(self.upconv4, self.bn4)
+        #
+        # self.up2 = nn.Sequential(self.bn4_out, self.conv7_1,self.bn7_1 , nn.ReLU(), self.conv7_2, self.bn7_2, nn.ReLU())
+        #
+        # self.output = nn.Sequential(self.conv4_1, self.bn4_1, nn.ReLU(), self.conv4_2, self.bn4_2, nn.ReLU())
+
 
     def forward(self, x1):
         x1 = F.relu(self.bn1_2(self.conv1_2(F.relu(self.bn1_1(self.conv1_1(x1))))))
@@ -75,3 +88,10 @@ class UNet(nn.Module):
             elif isinstance(m, nn.BatchNorm2d):
                 m.weight.data.fill_(1)
                 m.bias.data.zero_()
+
+
+if __name__ == '__main__':
+    unet = UNet()
+    weights = torch.load("../model_weights/denoise.pth")
+    for m in unet.named_parameters():
+        print(m)

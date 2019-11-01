@@ -9,7 +9,7 @@ import numpy as np
 import scipy.io as scio
 from PIL import Image, ImageDraw
 from PyQt5 import QtCore, QtWidgets, uic
-from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtWidgets import QFileDialog, QMessageBox
 from skimage.filters import sobel
 from skimage.measure import regionprops
 from skimage.morphology import opening, watershed, disk, erosion
@@ -48,30 +48,19 @@ class Code_MainWindow(Ui_MainWindow):
 
         self.imarray_original = None
 
-        self.__models = {
-            'circularMask_mse_beta': 1,
-            'denoise&airysuperrez_beta': 2,
-            'circularMask_chi10_beta': 3,
-            'circularMask_chi100_beta': 4,
-            'gaussianMask+': 5,
-            'circularMask': 6,
-            'guassianMask': 7,
-            'denoise': 8,
-            'denoise&bgremoval': 9,
-            'denoise&bgremoval&superres': 10
-        }
         self.__model_dir = "model_weights"
-        self.__model_paths = [os.path.join(self.__model_dir, 'circularMask.pth'),
-                              os.path.join(self.__model_dir, 'circularMask_mse_beta.pth'),
-                              os.path.join(self.__model_dir, 'circularMask_chi10_beta.pth'),
-                              os.path.join(self.__model_dir, 'circularMask_chi100_beta.pth'),
-                              os.path.join(self.__model_dir, 'guassianMask.pth'),
-                              os.path.join(self.__model_dir, 'gaussianMask+.pth'),
-                              os.path.join(self.__model_dir, 'denoise.pth'),
-                              os.path.join(self.__model_dir, 'denoise&bgremoval.pth'),
-                              os.path.join(self.__model_dir, 'denoise&airysuperrez_beta.pth'),
-                              os.path.join(self.__model_dir, 'denoise&bgremoval&superres.pth')
-                              ]
+        self.__models = {
+            'circularMask': os.path.join(self.__model_dir, 'circularMask.pth'),
+            'circularMask_mse_beta': os.path.join(self.__model_dir, 'circularMask_mse_beta.pth'),
+            'circularMask_chi10_beta': os.path.join(self.__model_dir, 'circularMask_chi10_beta.pth'),
+            'circularMask_chi100_beta': os.path.join(self.__model_dir, 'circularMask_chi100_beta.pth'),
+            'guassianMask': os.path.join(self.__model_dir, 'guassianMask.pth'),
+            'gaussianMask+': os.path.join(self.__model_dir, 'gaussianMask+.pth'),
+            'denoise': os.path.join(self.__model_dir, 'denoise.pth'),
+            'denoise&bgremoval': os.path.join(self.__model_dir, 'denoise&bgremoval.pth'),
+            'denoise&bgremoval&superres': os.path.join(self.__model_dir, 'denoise&bgremoval&superres.pth'),
+            'denoise&airysuperrez_beta': os.path.join(self.__model_dir, 'denoise&airysuperrez_beta.pth')
+        }
 
     def BrowseFolder(self):
         self.imagePath_content, _ = QFileDialog.getOpenFileName(self,
@@ -118,7 +107,7 @@ class Code_MainWindow(Ui_MainWindow):
         if not self.ori_image:
             raise Exception("No image is selected.")
         self.cuda = self.use_cuda.isChecked()
-        model_path = os.path.join(self.__curdir, self.__model_paths[self.model_num - 1])
+        model_path = os.path.join(self.__curdir, self.__models[self.model_name])
 
         if self.change_size.currentText() == 'Down sample by 2':
             self.width, self.height = self.ori_image.size
@@ -178,7 +167,7 @@ class Code_MainWindow(Ui_MainWindow):
                 inner_blk, outer_blk = GetIndexRangeOfBlk(self.height, self.width, blk_row, blk_col, r, c,
                                                           over_lap=int(self.width * 0.01))
                 temp_image = self.ori_content.crop((outer_blk[0], outer_blk[1], outer_blk[2], outer_blk[3]))
-                temp_result = load_model(model_path, self.model_num, temp_image, self.cuda)
+                temp_result = load_model(model_path, temp_image, self.cuda)
                 #                temp_result = map01(temp_result)
                 self.result[outer_blk[1]: outer_blk[3], outer_blk[0]: outer_blk[2]] = np.maximum(temp_result,
                                                                                                  self.result[
@@ -198,12 +187,11 @@ class Code_MainWindow(Ui_MainWindow):
         del temp_result
 
     def LoadModel(self):
-
-        self.modelPath_content = self.modelPath.currentText()
-        self.model_num = self.__models[self.modelPath_content]
-
+        self.model_name = self.modelPath.currentText()
+        if not self.ori_image:
+            QMessageBox.warning(self, "必须选择一张图片", self.tr("必须选择一张图片!"))
+            return
         self.__load_model()
-
         self.Denoise()
 
     def Denoise(self):
@@ -227,11 +215,7 @@ class Code_MainWindow(Ui_MainWindow):
         elevation_map = sobel(self.denoised_image)
 
         from scipy import ndimage as ndi
-        #distance = ndi.distance_transform_edt(self.denoised_image)
-        #from skimage.feature import peak_local_max
-        #local_maxi = peak_local_max(distance, indices=False, footprint=np.ones((3, 3)), labels=self.denoised_image)
         markers = np.zeros_like(self.denoised_image)
-        #        markers = ndi.label(local_maxi)[0]
         if self.set_thre.isChecked() and self.thre.text():
             max_thre = int(self.thre.text()) * 2.55
         else:
@@ -242,8 +226,6 @@ class Code_MainWindow(Ui_MainWindow):
         markers[self.denoised_image > max_thre] = 2
 
         seg_1 = watershed(elevation_map, markers)
-
-        #        seg_1 = watershed(-distance, markers,mask = self.denoised_image)
 
         filled_regions = ndi.binary_fill_holes(seg_1 - 1)
 
@@ -290,44 +272,22 @@ class Code_MainWindow(Ui_MainWindow):
 
         self.result = None
 
-    #        self.ori_array = None
-    #        del self.ori_content
-    #        del self.props
 
     def GetSavePath(self):
-
-        # file_name = self.imagePath_content.split('/')[-1]
         file_name = os.path.basename(self.imagePath_content)
-        # suffix = '.' + file_name.split('.')[-1]
         _, suffix = os.path.splitext(file_name)
         if suffix in ['.ser', '.dm3', '.tif']:
             name_no_suffix = file_name.replace(suffix, '')
             suffix = '.png'
         else:
             name_no_suffix = file_name.replace(suffix, '')
-        # if suffix == '.ser':
-        #     name_no_suffix = file_name.replace(suffix, '')
-        #     suffix = '.png'
-        # else:
-        #     if suffix == '.dm3':
-        #         name_no_suffix = file_name.replace(suffix, '')
-        #         suffix = '.png'
-        #     else:
-        #         if suffix == '.tif':
-        #             name_no_suffix = file_name.replace(suffix, '')
-        #             suffix = '.png'
-        #         else:
-        #             name_no_suffix = file_name.replace(suffix, '')
+
         if not self.change_size.currentText() == 'Do Nothing':
             name_no_suffix = name_no_suffix + '_' + self.change_size.currentText()
         has_content = True
 
         if self.auto_save.isChecked():
             save_path = os.path.join(self.__curdir, name_no_suffix)
-            # if os.name == 'posix':
-            #     save_path = self.__curdir + '/' + name_no_suffix
-            # else:
-            #     save_path = self.__curdir + '\\' + name_no_suffix
         else:
             path = QFileDialog.getExistingDirectory(self, "save", self.__curdir,
                                                     QFileDialog.ShowDirsOnly
@@ -335,30 +295,11 @@ class Code_MainWindow(Ui_MainWindow):
             if not path:
                 has_content = False
             save_path = os.path.join(path, name_no_suffix)
-            # if os.name == 'posix':
-            #     path = QFileDialog.getExistingDirectory(self, "save", "/home",
-            #                                             QFileDialog.ShowDirsOnly
-            #                                             | QFileDialog.DontResolveSymlinks)
-            #     if not path:
-            #         has_content = False
-            #
-            #     save_path = path + '/' + name_no_suffix
-            # else:
-            #     path = QFileDialog.getExistingDirectory(self, "save", self.__curdir,
-            #                                             QFileDialog.ShowDirsOnly
-            #                                             | QFileDialog.DontResolveSymlinks)
-            #     if not path:
-            #         has_content = False
-            #     save_path = path + '\\' + name_no_suffix
 
         if has_content:
             if not exists(save_path):
                 os.mkdir(save_path)
             temp_path = os.path.join(save_path, name_no_suffix)
-            # if os.name == 'posix':
-            #     temp_path = save_path + '/' + name_no_suffix
-            # else:
-            #     temp_path = save_path + '\\' + name_no_suffix
         else:
             temp_path = None
 
@@ -367,24 +308,24 @@ class Code_MainWindow(Ui_MainWindow):
     def Save(self):
         opt = self.save_option.currentText()
         _path, suffix = self.GetSavePath()
-        new_save_name = _path + '_output_' + self.modelPath_content + '.mat'
+        new_save_name = _path + '_output_' + self.model_name + '.mat'
         scio.savemat(new_save_name, {'result': self.result})
-        new_save_name = _path + '_ori_' + self.modelPath_content + '.mat'
+        new_save_name = _path + '_ori_' + self.model_name + '.mat'
         scio.savemat(new_save_name, {'origin': self.imarray_original})
 
         if not _path:
             return
 
         if opt == 'Model output':
-            new_save_name = _path + '_output_' + self.modelPath_content + suffix
+            new_save_name = _path + '_output_' + self.model_name + suffix
             self.output_image.save(new_save_name)
 
         if opt == 'Original image with markers':
-            new_save_name = _path + '_origin_' + self.modelPath_content + suffix
+            new_save_name = _path + '_origin_' + self.model_name + suffix
             self.ori_markers.save(new_save_name)
 
         if opt == 'Four-panel image':
-            new_save_name = _path + '_four_panel_' + self.modelPath_content + suffix
+            new_save_name = _path + '_four_panel_' + self.model_name + suffix
             im_save = Image.new('RGB', ((self.width + 1) * 2, (self.height + 1) * 2))
             im_save.paste(self.ori_content, (0, 0))
             im_save.paste(self.output_image, (self.width + 2, 0))
@@ -394,7 +335,7 @@ class Code_MainWindow(Ui_MainWindow):
             del im_save
 
         if opt == 'Atom positions':
-            new_save_name = _path + '_pos_' + self.modelPath_content + '.txt'
+            new_save_name = _path + '_pos_' + self.model_name + '.txt'
             file = open(new_save_name, 'w')
             for p in self.props:
                 c_y, c_x = p.centroid
@@ -410,11 +351,11 @@ class Code_MainWindow(Ui_MainWindow):
         if opt == 'Save ALL':
             new_save_name = _path + suffix
             self.ori_content.save(new_save_name)
-            new_save_name = _path + '_output_' + self.modelPath_content + suffix
+            new_save_name = _path + '_output_' + self.model_name + suffix
             self.output_image.save(new_save_name)
-            new_save_name = _path + '_origin_' + self.modelPath_content + suffix
+            new_save_name = _path + '_origin_' + self.model_name + suffix
             self.ori_markers.save(new_save_name)
-            new_save_name = _path + '_four_panel_' + self.modelPath_content + suffix
+            new_save_name = _path + '_four_panel_' + self.model_name + suffix
             im_save = Image.new('RGB', ((self.width + 1) * 2, (self.height + 1) * 2))
             im_save.paste(self.ori_content, (0, 0))
             im_save.paste(self.output_image, (self.width + 2, 0))
@@ -422,7 +363,7 @@ class Code_MainWindow(Ui_MainWindow):
             im_save.paste(self.out_markers, (self.width + 2, self.height + 2))
             im_save.save(new_save_name)
             del im_save
-            new_save_name = _path + '_pos_' + self.modelPath_content + '.txt'
+            new_save_name = _path + '_pos_' + self.model_name + '.txt'
             file = open(new_save_name, 'w')
             for p in self.props:
                 c_y, c_x = p.centroid
@@ -437,15 +378,6 @@ class Code_MainWindow(Ui_MainWindow):
     def drawPoint(self, event):
         self.pos = event.pos()
         self.update()
-
-    #   def paintEvent(self, event):
-    #       if self.pos:
-    #           p = QPainter()
-    #           p.begin(self)
-    #           p.setBrush(QtGui.QColor(0,255,0))
-    #           p.drawEllipse(self.ori.mapToParent(QtCore.QPoint(self.pos.x(), self.pos.y())), 5,5)
-    #           self.centralwidget.raise_()
-    #           p.end()
 
     def release(self):
         self.model_output.clear()
