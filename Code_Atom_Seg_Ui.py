@@ -61,7 +61,11 @@ class Code_MainWindow(Ui_MainWindow):
             'denoise&bgremoval&superres': os.path.join(self.__model_dir, 'denoise&bgremoval&superres.pth'),
             'denoise&airysuperrez_beta': os.path.join(self.__model_dir, 'denoise&airysuperrez_beta.pth')
         }
+        from torch.cuda import is_available
+        self.use_cuda.setChecked(is_available())
+        self.use_cuda.setDisabled(not is_available())
 
+        self.imagePath_content = None
     def BrowseFolder(self):
         self.imagePath_content, _ = QFileDialog.getOpenFileName(self,
                                                                 "open",
@@ -167,7 +171,7 @@ class Code_MainWindow(Ui_MainWindow):
                 inner_blk, outer_blk = GetIndexRangeOfBlk(self.height, self.width, blk_row, blk_col, r, c,
                                                           over_lap=int(self.width * 0.01))
                 temp_image = self.ori_content.crop((outer_blk[0], outer_blk[1], outer_blk[2], outer_blk[3]))
-                temp_result = load_model(model_path, temp_image, self.cuda)
+                temp_result = load_model(model_path, temp_image, self.cuda, self.set_iter.value())
                 #                temp_result = map01(temp_result)
                 self.result[outer_blk[1]: outer_blk[3], outer_blk[0]: outer_blk[2]] = np.maximum(temp_result,
                                                                                                  self.result[
@@ -212,6 +216,9 @@ class Code_MainWindow(Ui_MainWindow):
         del temp_image
 
     def CircleDetect(self):
+        if not self.imagePath_content:
+            QMessageBox.warning(self, "必须选择一张图片", self.tr("必须选择一张图片!"))
+            return
         elevation_map = sobel(self.denoised_image)
 
         from scipy import ndimage as ndi
@@ -306,8 +313,13 @@ class Code_MainWindow(Ui_MainWindow):
         return temp_path, suffix
 
     def Save(self):
+        if not self.imagePath_content:
+            QMessageBox.warning(self, "必须选择一张图片", self.tr("必须选择一张图片!"))
+            return
         opt = self.save_option.currentText()
         _path, suffix = self.GetSavePath()
+        if _path is None:
+            return
         new_save_name = _path + '_output_' + self.model_name + '.mat'
         scio.savemat(new_save_name, {'result': self.result})
         new_save_name = _path + '_ori_' + self.model_name + '.mat'

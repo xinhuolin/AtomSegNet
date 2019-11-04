@@ -39,7 +39,7 @@ def GetIndexRangeOfBlk(height, width, blk_row, blk_col, blk_r, blk_c, over_lap =
 """gaussianMask+ : /home/student/Documents/Atom Segmentation APP/AtomSegGUI/atom_seg_gaussian_mask/"""
 
 
-def load_model(model_path, data, cuda):
+def load_model(model_path, data, cuda, iter = 1):
 
 	from model_structure.unet_sigmoid import UNet
 
@@ -84,8 +84,10 @@ def load_model(model_path, data, cuda):
 		padding_transform = torch.nn.ConstantPad2d((padding_left, padding_right, padding_top, padding_bottom), 0)
 		ori_tensor = padding_transform(ori_tensor)
 
+	output = ori_tensor
 	with torch.no_grad():
-		output = unet(ori_tensor)
+		for _ in range(iter):
+			output = unet(output)
 
 	if use_padding:
 		output = output[:,:,padding_top : (padding_top + ori_height), padding_left : (padding_left + ori_width)]
