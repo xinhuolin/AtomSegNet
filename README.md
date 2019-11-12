@@ -8,3 +8,7 @@ torchvision==0.4.0
 ```
 python Code_Atom_Seg_Ui.py
 ```
+In DOS terminal, enter
+```
+run
+```
