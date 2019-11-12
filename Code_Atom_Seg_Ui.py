@@ -66,6 +66,7 @@ class Code_MainWindow(Ui_MainWindow):
         self.use_cuda.setDisabled(not is_available())
 
         self.imagePath_content = None
+
     def BrowseFolder(self):
         self.imagePath_content, _ = QFileDialog.getOpenFileName(self,
                                                                 "open",
@@ -279,7 +280,6 @@ class Code_MainWindow(Ui_MainWindow):
 
         self.result = None
 
-
     def GetSavePath(self):
         file_name = os.path.basename(self.imagePath_content)
         _, suffix = os.path.splitext(file_name)
@@ -354,9 +354,9 @@ class Code_MainWindow(Ui_MainWindow):
                 min_row, min_col, max_row, max_col = p.bbox
                 c_y_int = int(min(max(round(c_y), 0), self.height))
                 c_x_int = int(min(max(round(c_x), 0), self.width))
-
-                file.write("%s" % ((c_y, c_x, min_row, min_col, max_row, max_col, self.result[c_y_int, c_x_int]),))
-
+                locations = [str(i) for i in
+                             (c_y, c_x, min_row, min_col, max_row, max_col, self.result[c_y_int, c_x_int])]
+                file.write(",".join(locations))
                 file.write("\n")
             file.close()
 
@@ -382,8 +382,9 @@ class Code_MainWindow(Ui_MainWindow):
                 min_row, min_col, max_row, max_col = p.bbox
                 c_y_int = int(min(max(round(c_y), 0), self.height))
                 c_x_int = int(min(max(round(c_x), 0), self.width))
-
-                file.write("%s" % ((c_y, c_x, min_row, min_col, max_row, max_col, self.result[c_y_int, c_x_int]),))
+                locations = [str(i) for i in
+                             (c_y, c_x, min_row, min_col, max_row, max_col, self.result[c_y_int, c_x_int])]
+                file.write(",".join(locations))
                 file.write("\n")
             file.close()
 
