@@ -114,7 +114,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.revert.setObjectName("revert")
         self.split = QtWidgets.QCheckBox(self.centralwidget)
         self.split.setGeometry(QtCore.QRect(860, 130, 141, 21))
-        self.split.setChecked(True)
+        self.split.setChecked(False)
         self.split.setObjectName("split")
         self.denoise_method = QtWidgets.QComboBox(self.centralwidget)
         self.denoise_method.setGeometry(QtCore.QRect(880, 280, 91, 23))
@@ -133,6 +133,18 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.label_4.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.label_4.setAlignment(QtCore.Qt.AlignCenter)
         self.label_4.setObjectName("label_4")
+
+
+        self.set_iter_label= QtWidgets.QLabel( 'Iteration:' ,self.centralwidget)
+        self.set_iter_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.set_iter_label.setGeometry(QtCore.QRect(860, 210, 60, 23))
+
+        self.set_iter = QtWidgets.QSpinBox(self.centralwidget)
+        self.set_iter.setGeometry(QtCore.QRect(930, 210, 60, 23))
+        self.set_iter.setRange(1, 5)  # 1
+        self.set_iter.setSingleStep(1)  # 2
+        self.set_iter.setValue(1)
+
         self.change_size = QtWidgets.QComboBox(self.centralwidget)
         self.change_size.setGeometry(QtCore.QRect(860, 180, 131, 23))
         self.change_size.setObjectName("change_size")
@@ -143,6 +155,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.change_size.addItem("")
         self.change_size.addItem("")
         self.change_size.addItem("")
+
+
         self.set_thre = QtWidgets.QCheckBox(self.centralwidget)
         self.set_thre.setGeometry(QtCore.QRect(880, 400, 111, 21))
         self.set_thre.setChecked(False)
