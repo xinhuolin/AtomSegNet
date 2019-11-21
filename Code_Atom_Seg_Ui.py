@@ -68,10 +68,11 @@ class Code_MainWindow(Ui_MainWindow):
         self.imagePath_content = None
 
     def BrowseFolder(self):
-        self.imagePath_content, _ = QFileDialog.getOpenFileName(self,
-                                                                "open",
-                                                                "/home/",
-                                                                "All Files (*);; Image Files (*.png *.tif *.jpg *.ser *.dm3)")
+        path, _ = QFileDialog.getOpenFileName(self,
+                                              "open",
+                                              "/home/",
+                                              "All Files (*);; Image Files (*.png *.tif *.jpg *.ser *.dm3)")
+        self.imagePath_content = self.imagePath_content if not path else path
 
         if self.imagePath_content:
             self.imagePath.setText(self.imagePath_content)
