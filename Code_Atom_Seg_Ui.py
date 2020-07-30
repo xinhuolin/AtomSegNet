@@ -59,7 +59,8 @@ class Code_MainWindow(Ui_MainWindow):
             'denoise': os.path.join(self.__model_dir, 'denoise.pth'),
             'denoise&bgremoval': os.path.join(self.__model_dir, 'denoise&bgremoval.pth'),
             'denoise&bgremoval&superres': os.path.join(self.__model_dir, 'denoise&bgremoval&superres.pth'),
-            'denoise&airysuperrez_beta': os.path.join(self.__model_dir, 'denoise&airysuperrez_beta.pth')
+            'denoise&airysuperrez_beta': os.path.join(self.__model_dir, 'denoise&airysuperrez_beta.pth'),
+            'Gen1-noNoiseNoBackgroundSuperresolution': os.path.join(self.__model_dir, 'Gen1-noNoiseNoBackgroundSuperresolution.pth')
         }
         from torch.cuda import is_available
         self.use_cuda.setChecked(is_available())
@@ -70,7 +71,7 @@ class Code_MainWindow(Ui_MainWindow):
     def BrowseFolder(self):
         path, _ = QFileDialog.getOpenFileName(self,
                                               "open",
-                                              "/home/",
+                                              "/media/Elements/hewei/",
                                               "All Files (*);; Image Files (*.png *.tif *.jpg *.ser *.dm3)")
         self.imagePath_content = self.imagePath_content if not path else path
 
