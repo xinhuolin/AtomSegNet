@@ -49,8 +49,10 @@ def load_model(model_path, data, cuda, iter = 1):
 			net = net.cuda()
 		if cuda:
 			net = torch.nn.DataParallel(net)
-		# net.load_state_dict({k.replace('module.', ''): v for k, v in torch.load(model_path).items()})
-		net.load_state_dict(torch.load(model_path))
+			net.load_state_dict(torch.load(model_path))
+		else:
+			net.load_state_dict({k.replace('module.', ''): v for k, v in torch.load(model_path).items()})
+
 		transform = ToTensor()
 		ori_tensor = transform(data)
 		ori_tensor = torch.unsqueeze(ori_tensor, 0)
