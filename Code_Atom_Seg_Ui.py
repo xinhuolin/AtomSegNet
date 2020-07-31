@@ -60,7 +60,11 @@ class Code_MainWindow(Ui_MainWindow):
             'denoise&bgremoval': os.path.join(self.__model_dir, 'denoise&bgremoval.pth'),
             'denoise&bgremoval&superres': os.path.join(self.__model_dir, 'denoise&bgremoval&superres.pth'),
             'denoise&airysuperrez_beta': os.path.join(self.__model_dir, 'denoise&airysuperrez_beta.pth'),
-            'Gen1-noNoiseNoBackgroundSuperresolution': os.path.join(self.__model_dir, 'Gen1-noNoiseNoBackgroundSuperresolution.pth')
+            'Gen1-noNoiseNoBackgroundSuperresolution': os.path.join(self.__model_dir, 'Gen1-noNoiseNoBackgroundSuperresolution.pth'),
+            'Gen1-circularMask': os.path.join(self.__model_dir, 'Gen1-circularMask.pth'),
+            'Gen1-gaussianMask': os.path.join(self.__model_dir, 'Gen1-gaussianMask.pth'),
+            'Gen1-noBackgroundNonoise': os.path.join(self.__model_dir, 'Gen1-noBackgroundNonoise.pth'),
+            'Gen1-noNoise': os.path.join(self.__model_dir, 'Gen1-noNoise.pth'),
         }
         from torch.cuda import is_available
         self.use_cuda.setChecked(is_available())
@@ -148,18 +152,18 @@ class Code_MainWindow(Ui_MainWindow):
 
         if self.split.isChecked():
 
-            if self.height > 1024 and self.height < 2000:
+            if self.height > 512 and self.height <= 1024:
                 blk_row = 2
             else:
-                if self.height > 2000:
+                if self.height > 1024:
                     blk_row = 4
                 else:
                     blk_row = 1
 
-            if self.width > 1024 and self.width < 2000:
+            if self.width > 512 and self.width <= 1024:
                 blk_col = 2
             else:
-                if self.width > 2000:
+                if self.width > 1024:
                     blk_col = 4
                 else:
                     blk_col = 1

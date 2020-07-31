@@ -42,7 +42,11 @@ def GetIndexRangeOfBlk(height, width, blk_row, blk_col, blk_r, blk_c, over_lap =
 
 
 def load_model(model_path, data, cuda, iter = 1):
-	if os.path.basename(model_path) == "Gen1-noNoiseNoBackgroundSuperresolution.pth":
+	if os.path.basename(model_path) == "Gen1-noNoiseNoBackgroundSuperresolution.pth" or \
+			os.path.basename(model_path) == "Gen1-circularMask.pth" or \
+			os.path.basename(model_path) == "Gen1-gaussianMask.pth" or \
+			os.path.basename(model_path) == "Gen1-noBackgroundNonoise.pth" or \
+			os.path.basename(model_path) == "Gen1-noNoise.pth":
 		from mypackage.model.unet_standard import NestedUNet
 		net = NestedUNet()
 		if cuda:
