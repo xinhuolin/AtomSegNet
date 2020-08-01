@@ -186,6 +186,7 @@ class Code_MainWindow(Ui_MainWindow):
                                                                                                      3], outer_blk[0]:
                                                                                                          outer_blk[2]])
 
+        self.result[self.result < 0] = 0
         self.model_output_content = map01(self.result)
         self.model_output_content = (self.model_output_content * 255 / np.max(self.model_output_content)).astype(
             'uint8')
