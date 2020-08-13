@@ -14,7 +14,7 @@ run
 ```
 
 
-### Benchmark of the precision of AtomSegNet atom localizer
+### Benchmark of the precision of AtomSegNe's atom localizer
 
 We beat the golden standard--2d Gaussian fit
 <p align="left"><img src="test_img/tem13.png" width="600"\></p>
@@ -23,6 +23,4 @@ We beat the golden standard--2d Gaussian fit
 ### Examples
 
 <p align="left"><img src="test_img/03_afterimage_8nm_crp_four_panel_guassianMask.png" width="600"\></p>
-
-<p align="left"><img src="test_img/tem12.png" width="1024"\></p>
 
