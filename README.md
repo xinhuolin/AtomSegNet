@@ -12,3 +12,5 @@ In DOS terminal, enter
 ```
 run
 ```
+
+<p align="center"><img src="test_img/03_afterimage_8nm_crp_four_panel_guassianMask.png" width="600"\></p>
