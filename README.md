@@ -15,7 +15,7 @@ run
 
 ### Examples
 
-<p align="left"><img src="test_img/tem12.png" width="600"\></p>
+<p align="left"><img src="test_img/tem12.png" width="1024"\></p>
 
 <p align="left"><img src="test_img/03_afterimage_8nm_crp_four_panel_guassianMask.png" width="600"\></p>
 
