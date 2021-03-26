@@ -26,3 +26,4 @@ We beat the golden standard--2d Gaussian fit
 
 <p align="left"><img src="test_img/03_afterimage_8nm_crp_four_panel_guassianMask.png" width="600"\></p>
 
+See more examples at Reports, 11, 5386 (2021)  https://doi.org/10.1038/s41598-021-84499-w 
