@@ -1,5 +1,6 @@
 # AtomSegNet
 AtomSegNet by DeepEM Lab@UCI
+Please reference paper:  Scientific Reports, 11, 5386 (2021)  https://doi.org/10.1038/s41598-021-84499-w 
 
 pytorch == 1.3.0
 torchvision==0.4.0
