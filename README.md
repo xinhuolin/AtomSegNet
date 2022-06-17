@@ -9,7 +9,9 @@ scikit-image=0.18.3 (up to 0.18.3. Incompatible with 0.19 because watershed has 
 
 
 Try the following if you have trouble loading the app
+
 conda install scikit-image=0.18.3
+
 pip install scikit-image==0.18.3
 
 ### Running the App
