@@ -21,8 +21,7 @@ python Code_Atom_Seg_Ui.py
 In DOS terminal, enter
 ```
 run
-```Cancel changes
-
+```
 
 ### Benchmark of the precision of AtomSegNe's atom localizer
 
