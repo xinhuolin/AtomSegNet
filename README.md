@@ -5,6 +5,7 @@ Please reference paper:  Scientific Reports, 11, 5386 (2021)  https://doi.org/10
 
 pytorch == 1.3.0
 torchvision==0.4.0
+scikit-image=0.18.3 (up to 0.18.3. Incompatible with 0.19 because watershed has been moved to a different module)
 
 ### Running the App
 ```
